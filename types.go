@@ -4,6 +4,7 @@ type FSM struct {
 	states  map[string]FSMEntry
 	Bag     interface{}
 	current FSMEntry
+	finish  bool
 }
 
 type FSMEntry interface {
