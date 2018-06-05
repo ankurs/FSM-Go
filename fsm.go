@@ -8,27 +8,27 @@ var (
 	StateNotFoundError = errors.New("State Not Found")
 )
 
-func New() *FSM {
-	fsm := new(FSM)
-	fsm.states = make(map[string]FSMEntry)
+func New() FSM {
+	fsm := new(fsm)
+	fsm.states = make(map[string]State)
 	fsm.finish = false
 	fsm.current = nil
 	return fsm
 }
 
-func (fsm *FSM) AddState(entry FSMEntry) {
+func (fsm *fsm) AddState(entry State) {
 	if entry != nil {
 		fsm.states[entry.GetName()] = entry
 	}
 }
 
-func (fsm *FSM) AddStates(entries ...FSMEntry) {
+func (fsm *fsm) AddStates(entries ...State) {
 	for pos := range entries {
 		fsm.AddState(entries[pos])
 	}
 }
 
-func (fsm *FSM) GetAllStates() []string {
+func (fsm *fsm) GetAllStates() []string {
 	states := make([]string, 0)
 	for state := range fsm.states {
 		states = append(states, state)
@@ -36,12 +36,12 @@ func (fsm *FSM) GetAllStates() []string {
 	return states
 }
 
-func (fsm *FSM) ContainsState(state string) bool {
+func (fsm *fsm) ContainsState(state string) bool {
 	_, ok := fsm.states[state]
 	return ok
 }
 
-func (fsm *FSM) MoveToState(state string) error {
+func (fsm *fsm) MoveToState(state string) error {
 	if entry, ok := fsm.states[state]; ok {
 		if fsm.current != nil {
 			fsm.current.Exit(fsm)
@@ -54,14 +54,14 @@ func (fsm *FSM) MoveToState(state string) error {
 	}
 }
 
-func (fsm *FSM) Execute() interface{} {
+func (fsm *fsm) Execute() interface{} {
 	if fsm.current == nil {
 		return nil
 	}
 	return fsm.current.Execute(fsm)
 }
 
-func (fsm *FSM) ExecuteTillFinish() {
+func (fsm *fsm) ExecuteTillFinish() {
 	if fsm.current != nil {
 		for !fsm.IsFinished() {
 			fsm.Execute()
@@ -69,10 +69,10 @@ func (fsm *FSM) ExecuteTillFinish() {
 	}
 }
 
-func (fsm *FSM) Finish() {
+func (fsm *fsm) Finish() {
 	fsm.finish = true
 }
 
-func (fsm *FSM) IsFinished() bool {
+func (fsm *fsm) IsFinished() bool {
 	return fsm.finish
 }
